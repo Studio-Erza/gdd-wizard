@@ -1,0 +1,286 @@
+/* --- Split from original single-file HTML --- */
+/* Inter Variable – Upright */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/InterVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inter Variable – Italic */
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/InterVariable-Italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face{font-family:'Inter';src:local('Inter'),local('Inter Regular');font-weight:100 900;font-style:normal;font-display:swap}
+:root{--bg:#0e0e0e;--text:#c8c8c8;--muted:#999;--accent:#f14cba;--card:#151515;--border:#2a2a2a}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.app{max-width:1200px;margin:0 auto;padding:24px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+/* Ensure brand is a horizontal flex row */
+.brand {
+  display: flex;
+  flex-direction: row;       /* guard, in case it was overridden */
+  align-items: center;
+  gap: 14px;
+}
+/* Keep the logo tidy */
+.brand-logo { display: inline-flex; }
+#studioLogo {
+  width: 128px;               /* adjust if you like (96px is the site default) */
+  height: 128px;
+  border-radius: 12px;
+  display: block;
+}
+.infoPanel {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border, #333);
+  border-radius: 0.5rem;
+  background: rgba(255,255,255,0.03);
+}
+
+.theme-light .infoPanel { background: rgba(0,0,0,0.03); }
+
+.infoPanel .tipsTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.infoPanel .tipsList {
+  margin: 0.25rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.infoPanel .tipsList li {
+  margin: 0.2rem 0;
+}
+.title{font-size:clamp(22px,3.5vw,30px);font-weight:800}
+.desc{color:var(--muted);font-size:14px;max-width:65ch}
+
+header.top .row{display:flex;gap:8px;flex-wrap:nowrap}
+header.top .row button{white-space:nowrap;flex:0 0 auto}
+
+.shell{display:grid;grid-template-columns:260px 1fr;gap:16px}
+@media (max-width:900px){.shell{grid-template-columns:1fr}}
+
+.sidebar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;position:sticky;top:12px;height:max-content}
+.progress{height:8px;background:#1e1e1e;border-radius:8px;overflow:hidden}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#ff9bdc);transition:width .25s ease}
+.steps{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.step{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+.step:hover{background:#191919;border-color:#222}
+.step.active{background:#1b1b1b;border-color:var(--border)}
+.step-index{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#111;background:var(--accent)}
+
+.main{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fields.single{grid-template-columns:1fr}
+@media (max-width:900px){.fields{grid-template-columns:1fr}}
+
+label{font-size:13px;color:#e8e8e8;display:block;margin-bottom:6px}
+input[type="text"],input[type="date"],textarea{width:100%;background:#121212;color:#dcdcdc;border:1px solid var(--border);border-radius:12px;padding:10px 12px;font:inherit}
+textarea{min-height:96px;resize:vertical}
+
+.radio-group{display:flex;flex-direction:column;gap:8px}
+.radio-option{display:flex;align-items:center;gap:8px}
+.radio-option input{accent-color:var(--accent)}
+
+.checklist{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:#121212;font-size:13px}
+.chip input{accent-color:var(--accent)}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:10px}
+button{background:var(--accent);color:#111;border:none;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(241,76,186,.25)}
+button.secondary{background:#1f1f1f;color:#c8c8c8;border:1px solid var(--border);box-shadow:none}
+button.icon{padding:6px 10px;border-radius:10px}
+button:disabled{opacity:.45;cursor:not-allowed}
+
+.row{display:flex;gap:8px;align-items:center}
+.muted{color:var(--muted);font-size:12px}
+.hint{color:var(--muted);font-size:13px;margin-bottom:12px}
+
+.featureCard{border:1px solid var(--border);background:#121212;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.featureHeader{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.featureTitle{font-weight:700;color:#e8e8e8}
+
+/* Cover image panel */
+.imgPanel{border:2px dashed var(--border);border-radius:12px;background:#121212;padding:12px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s ease, box-shadow .2s ease, background .2s ease}
+.imgPanel.dragging{border-color:var(--accent);background:#171717;box-shadow:0 0 0 3px rgba(241,76,186,.25) inset}
+.imgRow{display:flex;align-items:center;gap:12px}
+.dz-thumb{width:72px;height:72px;border-radius:10px;border:1px solid #2a2a2a;background:#0e0e0e;overflow:hidden;display:grid;place-items:center}
+.dz-thumb img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.btnRow{display:flex;gap:8px;flex-wrap:wrap}
+.sizeRow{display:flex;align-items:center;gap:8px}
+.sizeRow button{padding:6px 10px}
+.tip{font-size:12px;color:var(--muted)}
+
+.stickyBar{position:sticky;top:8px;z-index:5;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:linear-gradient(0deg,rgba(14,14,14,0.9),rgba(14,14,14,0.9));backdrop-filter:saturate(1.1) blur(2px);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.stickyBar .title{font-size:13px;font-weight:700;color:#e8e8e8;margin-right:2px}
+.stickyBar .group{display:flex;gap:6px;align-items:center;margin-left:0}
+.stickyBar .group.right{margin-left:auto}
+.stickyBar .btns{display:flex;gap:6px}
+.stickyBar .btns button{background:#1f1f1f;color:#c8c8c8;border:1px solid var(--border);box-shadow:none;padding:6px 10px;border-radius:10px}
+.stickyBar .btns button.active{background:#e2e2e2;color:#111;border-color:transparent}
+
+.previewWrap{border:1px solid var(--border);border-radius:12px;background:#0b0b0b;padding:16px}
+.previewPage{background:#fff;color:#111;width:8.27in;margin:0 auto;box-shadow:0 6px 30px rgba(0,0,0,.45);border-radius:0;overflow:hidden}
+.previewPage a{color:inherit}
+.previewContent{padding:0}
+.previewPage .page{min-height:100%}
+.previewPage .page .pageSafe{min-height:100vh;display:flex;flex-direction:column;padding:8mm 18mm}
+.previewPage .page .contentWrap{flex:1 1 auto}
+
+/* COVER (preview) */
+.previewPage .cover{padding:8mm 0 0 0}
+.previewPage .coverRow{display:flex;align-items:flex-start;justify-content:space-between;gap:10mm}
+/* Reduce title→meta gap to avoid needing :first-of-type tweaks */
+.previewPage .cover h1{margin:0 0 1.2mm 0;font-size:24pt;line-height:1.15;font-weight:800;padding-bottom:0.5mm;border-bottom:2px solid #e0e0e0}
+.previewPage .metaBlock{flex:1 1 auto}
+.previewPage .meta{color:#444;font-size:11pt;margin:0}
+/* Tighter metadata rows */
+.previewPage .meta p{margin:0 0 0.6mm 0}
+.previewPage .meta p:last-child{margin-bottom:0}
+.previewPage .meta strong{font-weight:800;color:#222}
+.previewPage .meta span{font-weight:400;color:#444}
+.previewPage .metaImage{flex:0 0 auto}
+.previewPage .metaImage img{display:block;width:auto;height:auto;object-fit:contain;border:none;border-radius:0}
+.previewPage .metaImage.invert img{filter:invert(1) hue-rotate(180deg)}
+
+/* SECTIONS (preview) */
+.previewPage section{margin:4.5mm 0 0 0;padding-top:4.5mm}
+.previewPage section>h2{margin:0 0 1.0mm 0;font-size:16pt;line-height:1.25;font-weight:800;padding-bottom:0.75mm;border-bottom:2px solid #e0e0e0}
+.previewPage h3{margin:3.2mm 0 1.2mm 0;font-size:12.5pt;line-height:1.3;font-weight:700}
+/* Core Loop only: make h2→h3 gap match other sections */
+
+/* Back-compat h4 */
+.previewPage h4{margin:4mm 0 1mm 0;font-size:12pt;line-height:1.3;font-weight:700}
+.previewPage p{font-size:11pt;line-height:1.6;margin:0 0 2.4mm 0;hyphens:auto}
+.previewPage li{font-size:11pt;line-height:1.4;margin:0 0 1.2mm 0;hyphens:auto}
+.previewPage ul{margin:0 0 2mm 0;padding-left:8mm}
+.previewPage .feature-block{margin-bottom:2.4mm}
+
+/* Team chips (preview) */
+.previewPage .team-line{margin:0 0 2.4mm 0}
+.previewPage .team-chip{display:inline-block;white-space:nowrap}
+.previewPage .team-chip:not(:last-child)::after{content:" \007C ";} /* adds a pipe with spaces */
+
+.previewPage .loop-section{display:flex;flex-direction:column}
+.previewPage section.loop-section h3 { margin-top: 2mm; }
+.previewPage section.loop-section p  { margin-bottom: 1.6mm; }
+.previewPage .loop-flex-spacer{flex:1 1 auto}
+.previewPage .loop-diagram{position:relative;overflow:hidden;contain:layout paint;width:100%;margin:0 auto}
+.previewPage .loop-diagram-inner{position:relative;left:50%;transform:translateX(-50%);max-width:none;width:var(--loop-scale-pct,100%)}
+.previewPage .loop-diagram img,.previewPage .loop-diagram svg{display:block;width:100%;height:auto}
+
+.previewPage .label{color:#666;font-weight:700}
+
+svg,svg defs,svg marker{overflow:visible}
+
+/* DARK THEME (preview) */
+.previewPage.theme-dark{background:var(--bg);color:var(--text)}
+.previewPage.theme-dark .cover h1{border-bottom-color:var(--border)}
+.previewPage.theme-dark section>h2{border-bottom-color:var(--border)}
+.previewPage.theme-dark .meta,
+.previewPage.theme-dark .meta strong,
+.previewPage.theme-dark .meta span{color:var(--text)}
+.previewPage.theme-dark .metaImage.invert img{filter:invert(1) hue-rotate(180deg)}
+.previewPage.theme-dark .label{color:var(--muted)}
+
+.gdd-footer{display:flex;align-items:center;justify-content:flex-start;gap:8px;margin-top:12mm;font-size:8pt;font-style:italic;color:#333}
+.previewPage.theme-dark .gdd-footer{color:#c8c8c8}
+.gdd-footer img{height:3em;width:auto;object-fit:contain;display:block}
+
+/* Invert footer logos in dark theme automatically */
+body.dark-theme .gdd-footer img,
+.previewPage.theme-dark .gdd-footer img,
+#printView[data-theme="dark"] .gdd-footer img{filter:invert(1) hue-rotate(180deg)}
+
+/* Print view base */
+#printView{display:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media print{
+  @page{margin:0}
+  html,body{background:transparent !important}
+  .app,.sidebar,header.top,.footer{display:none !important}
+  #printView{display:block;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0;position:relative}
+  #printView a{color:inherit;text-decoration:underline}
+  #printBg{position:fixed;inset:0;z-index:-9999;background:#ffffff}
+  #printView[data-theme="dark"] #printBg{background:var(--bg)}
+  #printView .page{min-height:100vh;background:transparent;color:#111}
+  #printView[data-theme="dark"] .page{background:transparent;color:var(--text)}
+  #printView .page .pageSafe{min-height:100vh;display:flex;flex-direction:column;padding:8mm 18mm}
+  #printView .page .contentWrap{flex:1 1 auto}
+  
+  #printView .page section.no-top-divider::before {
+    content: "";
+    display: block;
+    height: 10mm;              /* your desired extra top space */
+  }
+  
+  /* COVER (print) */
+  #printView .page .cover{padding:8mm 0 0 0}
+  #printView .page .coverRow{display:flex;align-items:flex-start;justify-content:space-between;gap:10mm}
+  /* Ensure metaBlock behaves like preview (so H1 can span to the image edge) */
+  #printView .page .metaBlock{flex:1 1 auto}
+  #printView .page .metaImage{flex:0 0 auto}
+  /* Make H1 block-level and full-width within metaBlock so the border spans fully, and reduce bottom gap */
+  #printView .page .cover h1{display:block;width:100%;margin:0 0 1.2mm 0;font-size:24pt;line-height:1.15;font-weight:800;padding-bottom:0.5mm;border-bottom:2px solid #e0e0e0}
+  /* Tighter COVER metadata spacing (print) */
+  #printView .page .cover .meta p{margin:0 0 0.6mm 0}
+  #printView .page .cover .meta p:last-child{margin-bottom:0}
+
+  /* SECTIONS (print) */
+  #printView .page section{margin:4.5mm 0 0 0;padding-top:4.5mm;page-break-inside:avoid;break-inside:avoid-page}
+  #printView .page section>h2{margin:0 0 1.0mm 0;font-size:16pt;line-height:1.25;font-weight:800;padding-bottom:0.75mm;border-bottom:2px solid #e0e0e0;page-break-after:avoid;break-after:avoid-page}
+  /* Core Loop only: make h2→h3 gap match other sections */
+
+  /* Team chips (print) */
+  #printView .page .team-line{margin:0 0 2.4mm 0}
+  #printView .page .team-chip{display:inline-block;white-space:nowrap}
+  #printView .page .team-chip:not(:last-child)::after{content:" \007C ";}
+
+  /* DARK THEME (print) */
+  #printView[data-theme="dark"] .page .cover h1{border-bottom-color:var(--border)}
+  #printView[data-theme="dark"] .page section>h2{border-bottom-color:var(--border)}
+
+  /* Typography */
+  #printView .page h3{margin:3.2mm 0 1.2mm 0;font-size:12.5pt;line-height:1.3;font-weight:700}
+  #printView .page p{font-size:11pt;line-height:1.6;margin:0 0 2.4mm 0;hyphens:auto}
+  #printView .page li{font-size:11pt;line-height:1.4;margin:0 0 1.2mm 0;hyphens:auto}
+  #printView .page ul{margin:0 0 2mm 0;padding-left:8mm}
+  #printView .page .feature-block{break-inside:avoid-page;page-break-inside:avoid;margin-bottom:2.4mm}
+  #printView .page section.loop-section{display:flex;flex-direction:column;min-height:auto}
+  #printView .page section.loop-section h3 { margin-top: 2mm; }
+  #printView .page section.loop-section p  { margin-bottom: 1.6mm; }
+  #printView .page .loop-flex-spacer{display:none}
+  #printView .page .loop-diagram{position:relative;overflow:hidden;contain:layout paint;margin-bottom:0mm}
+  #printView .page .loop-diagram-inner{position:relative;left:50%;transform:translateX(-50%);max-width:none;width:var(--loop-scale-pct,100%)}
+  #printView .page .loop-diagram img,#printView .page .loop-diagram svg{display:block;width:100%;height:auto}
+  
+  #printView .page section.no-top-divider > h2 {
+  border-bottom: 0 !important;
+}
+  #printView .page section.no-top-divider {
+  padding-top: 10mm !important; /* increase from default 4.5mm */
+}
+
+  /* Print — Footer text too dark on dark theme: force lighter text & proper fill */
+  #printView[data-theme="dark"] .gdd-footer{color:#e6e6e6 !important}
+  #printView[data-theme="dark"] .gdd-footer,* #printView[data-theme="dark"] .gdd-footer *{-webkit-text-fill-color:currentColor !important;color:inherit !important}
+  
+  /* Make inline labels muted in print too */
+  #printView .label { color:#666; font-weight:700; }
+  #printView[data-theme="dark"] .label { color:var(--muted); }
+}

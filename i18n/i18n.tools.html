@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>i18n Tools</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<style>
+  :root{ --bg:#0e0e0e; --text:#c8c8c8; --muted:#999; --accent:#f14cba; --card:#151515; --border:#2a2a2a; }
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5;padding:24px;}
+  h1{margin:0 0 12px;font-size:22px;font-weight:800;} h2{margin:20px 0 8px;font-size:16px;font-weight:700;color:#e8e8e8;}
+  p,label{color:var(--text);} .muted{color:var(--muted);} .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:8px 0 12px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
+  .lang-card{background:#121212;border:1px solid var(--border);border-radius:12px;padding:12px;margin:12px 0;}
+  label{font-size:13px;color:#e8e8e8;display:flex;gap:8px;align-items:center;}
+  input[type=text],input[type=file],textarea{background:#121212;color:#dcdcdc;border:1px solid var(--border);border-radius:12px;padding:10px 12px;font:inherit;}
+  input[type=file]{padding:6px 8px}
+  textarea{width:100%;min-height:320px;height:56vh;resize:vertical;}
+  .kv{font:12px/1.4 ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;background:#121212;border:1px dashed var(--border);padding:8px;border-radius:10px;color:var(--muted);} code{font-family:ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;}
+  button{background:var(--accent);color:#111;border:none;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(241,76,186,.25)}
+  button.secondary{background:#1f1f1f;color:#c8c8c8;border:1px solid var(--border);box-shadow:none}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#1f1f1f;border:1px solid var(--border);font:12px/1 system-ui,sans-serif;color:var(--muted)}
+  .ok{color:#5ad57b}.warn{color:#ffb45a}.err{color:#ff6b6b}
+  .lang-card textarea{background:#0e0e0e;color:#dcdcdc;border:1px solid var(--border);border-radius:10px;padding:8px;width:100%;min-height:120px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .editor{margin-top:10px;border-top:1px dashed var(--border);padding-top:10px}
+  .edit-row{display:grid;grid-template-columns:1.2fr 1fr;gap:8px;align-items:start;margin:8px 0}
+  .edit-row code{display:block;font:12px/1.4 ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;color:#bbb;overflow:auto}
+  .edit-row input,.edit-row textarea{width:100%;}
+  .hint{font:12px/1.4 ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;color:#888}
+  .importer{margin-top:10px;padding:10px;border:1px dashed var(--border);border-radius:10px;background:#0f0f0f}
+  .importer textarea{min-height:140px;height:140px}
+  /* NEW: keep editor textareas at minimum by default (one-line-ish) */
+  .editor textarea{min-height:1.8em;height:auto;resize:vertical;}
+</style>
+</head>
+<body>
+  <h1>i18n Tools</h1>
+  <p class="muted">Upload <code>i18n.en.js</code> as canonical base. Packs auto-load from this folder via <code>&lt;script&gt;</code>. <b>Rebase</b> keeps translations, drops removed keys, adds blanks for new ones, preserves EN order/comments, and <b>preserves the language name</b>. You can <b>edit Empty keys inline</b> (placeholders from EN), and now <b>Export Empty → JSON</b> / <b>Import Translations (JSON)</b> per language. Outputs are downloaded as <code>.js</code>.</p>
+
+  <section class="card" id="scaffold">
+    <h2>Scaffolder</h2>
+    <p class="muted">Generates a new <code>i18n.&lt;code&gt;.js</code> with the <b>exact structure & comments</b> from your uploaded English base. All values are empty strings (<code>''</code>).</p>
+    <div class="row">
+      <label>Upload English base: <input id="enFile" type="file" accept=".js" /></label>
+      <label>Language code: <input id="scCode" placeholder="es" /></label>
+      <label>Language name: <input id="scName" placeholder="Spanish" /></label>
+      <button id="scGen" disabled>Generate</button>
+      <button id="scDownload" class="secondary">Download</button>
+      <span class="pill" id="scStatus">EN base: <span id="scBaseStatus">not loaded</span></span>
+    </div>
+    <div class="kv">We read the raw English file via <code>FileReader</code> to preserve comments and ordering. No network requests are used.</div>
+    <h2>Output</h2>
+    <textarea id="scOut" placeholder="Generated i18n.&lt;lang&gt;.js will appear here..." readonly></textarea>
+  </section>
+
+  <section class="card" id="checker">
+    <h2>Checker</h2>
+    <p class="muted">Compares all detected packs (besides EN) against the uploaded English base. Flags <b>Missing</b>, <b>Extra</b>, and <b>Empty</b> (present but ''). You can edit Empty items inline, export them to JSON for MT, import translated JSON, and save.</p>
+    <div class="row">
+      <label>Probe language codes (comma-separated):
+        <input id="ckProbe" value="es,fr,pt,de,it,jp,ko,zh,ru,pl,tr,nl,sv,no,fi,cs,uk" />
+      </label>
+      <button id="ckRun" disabled>Scan & Check</button>
+      <button id="rebaseAll" class="secondary" disabled>Rebase All & Download</button>
+      <span class="pill">Loaded: <span id="ckKnown">(none)</span></span>
+    </div>
+    <div class="results" id="ckResults"></div>
+  </section>
+
+<script>
+'use strict';
+// ---- Minimal I18N runtime with language name capture ----
+(function(){
+  if(!window.I18N){
+    const _dict=new Map();
+    const _names=new Map();
+    window.I18N={
+      registerLanguage:(code,name)=>{ _names.set(code,String(name||code.toUpperCase())); },
+      addDict:(code,obj)=>{ const d=_dict.get(code)||{}; Object.assign(d,obj); _dict.set(code,d); },
+      getAll:(code)=>_dict.get(code)||{},
+      known:()=>Array.from(_dict.keys()),
+      getName:(code)=>_names.get(code)||code.toUpperCase()
+    };
+  }
+})();
+
+function $(id){ return document.getElementById(id); }
+function downloadBlob(name,text){ const blob=new Blob([text],{type:'text/javascript'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
+function readFileAsText(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result||'')); r.onerror=rej; r.readAsText(file); }); }
+function scriptOnce(src){ return new Promise((resolve)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=()=>resolve({src,ok:true}); s.onerror=()=>resolve({src,ok:false}); document.head.appendChild(s); }); }
+
+let EN_SOURCE_RAW='';
+const editsByLang = new Map(); // session-only draft edits { code -> {key:value} }
+
+// ---- Upload EN ----
+$('enFile').addEventListener('change', async (e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; try{ EN_SOURCE_RAW=await readFileAsText(f); new Function(EN_SOURCE_RAW)(); $('scBaseStatus').textContent='ready'; $('scStatus').classList.add('ok'); $('scGen').disabled=false; $('ckRun').disabled=false; } catch(err){ console.error('EN load failed',err); $('scBaseStatus').textContent='failed'; $('scStatus').classList.add('err'); }});
+
+// ---- Scaffolder (unchanged rules) ----
+function rewriteHeaderToLang(src, code, name){ src=src.replace(/I18N\.registerLanguage\(\s*'en'\s*,\s*'[^']*'\s*\)/,`I18N.registerLanguage('${code}','${name||code.toUpperCase()}')`); src=src.replace(/I18N\.addDict\(\s*'en'\s*,\s*\{/,`I18N.addDict('${code}', {`); return src; }
+function blankValuesButKeepComments(src){ const lines=src.split(/\r?\n/), out=[]; let inDict=false, depth=0; const kv=/(^\s*)['\"]([^'\"]+)['\"]\s*:\s*(['\"])(?:[^\\]|\\.)*?\3(\s*,?\s*)(\/\/.*)?$/; for(let L of lines){ if(L.includes("I18N.addDict('")) inDict=true; if(inDict){ if(L.includes('{'))depth++; if(L.includes('}'))depth--; } const m=L.match(kv); if(m&&inDict&&depth>=1){ const ind=m[1], key=m[2], tail=m[4]||'', comment=m[5]||''; L=`${ind}'${key}': ''${tail}${comment}`; } if(inDict&&depth<=0) inDict=false; out.push(L);} return out.join('\n'); }
+function doGenerate(){ const code=$('scCode').value.trim(); const name=$('scName').value.trim()||code.toUpperCase(); if(!code){ alert('Enter a language code'); return; } if(!EN_SOURCE_RAW){ alert('Upload the English base first'); return; } let out=rewriteHeaderToLang(EN_SOURCE_RAW,code,name); out=blankValuesButKeepComments(out); $('scOut').value=out; }
+$('scGen').addEventListener('click',doGenerate); $('scDownload').addEventListener('click',()=>{ const code=$('scCode').value.trim()||'xx'; const txt=$('scOut').value; if(!txt){ alert('Nothing to download — click Generate first.'); return; } downloadBlob('i18n.'+code+'.js',txt); });
+
+// ---- Checker + Edit support ----
+function compareMaps(enMap, otherMap){ const missing=[], extra=[], empty=[]; const enKeys=Object.keys(enMap), otherKeys=Object.keys(otherMap||{}); const enSet=new Set(enKeys), otherSet=new Set(otherKeys); for(const k of enKeys){ if(!otherSet.has(k)) missing.push(k); } for(const k of otherKeys){ if(!enSet.has(k)) extra.push(k); } for(const k of enKeys){ if(otherSet.has(k)){ const v=otherMap[k]; if(typeof v!=="string" || v==="") empty.push(k); }} return {missing, extra, empty}; }
+
+async function runChecker(){ const en=(window.I18N&&I18N.getAll)?I18N.getAll('en'):{}; if(!en||!Object.keys(en).length){ $('ckResults').innerHTML='<p class="err">Upload EN base first.</p>'; return; } const probe=$('ckProbe').value.split(',').map(s=>s.trim()).filter(Boolean); await Promise.all(probe.filter(c=>c!=='en').map(c=>scriptOnce('./i18n.'+c+'.js'))); const known=(I18N.known?I18N.known():[]).filter(c=>c!=='en'); $('ckKnown').textContent=known.map(c=>c.toUpperCase()).join(', ')||'(none)'; const wrap=document.createElement('div'); for(const code of known){ const map=I18N.getAll(code)||{}; const cmp=compareMaps(en,map); const name=I18N.getName?I18N.getName(code):code.toUpperCase(); const card=document.createElement('div'); card.className='lang-card'; const hasEmpty = cmp.empty.length>0; card.innerHTML=`<h3>${code.toUpperCase()} — ${name}</h3>`+
+      `<p class='err'>Missing: ${cmp.missing.length}</p>`+(cmp.missing.length?`<textarea readonly>${cmp.missing.join('\n')}</textarea>`:'')+
+      `<p class='warn'>Extra: ${cmp.extra.length}</p>`+(cmp.extra.length?`<textarea readonly>${cmp.extra.join('\n')}</textarea>`:'')+
+      `<p class='warn'>Empty: ${cmp.empty.length}</p>`+(hasEmpty?`<textarea readonly>${cmp.empty.join('\n')}</textarea>`:'')+
+      `<div class='actions'>`+
+        `<button class='secondary' data-rebase='${code}'>Rebase & Download</button>`+
+        (hasEmpty?`<button class='secondary' data-edit='${code}'>Edit Empty</button>`:'')+
+        (hasEmpty?`<button class='secondary' data-export='${code}'>Export Empty → JSON</button>`:'')+
+        `<button class='secondary' data-open-import='${code}'>Import Translations (JSON)</button>`+
+        `<a class='secondary' style='text-decoration:none;display:inline-block;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:#1f1f1f;color:#c8c8c8' href='./i18n.${code}.js' target='_blank' rel='noopener'>Open file</a>`+
+      `</div>`+
+      `<div class='editor' id='editor-${code}' style='display:none'></div>`+
+      `<div class='importer' id='importer-${code}' style='display:none'>`+
+        `<p class='muted'>Paste JSON mapping of <code>key → translation</code> (only keys in EN are applied). Example: {"menu.file.new":"Nuevo"}</p>`+
+        `<textarea data-import-text='${code}' placeholder='{"key":"translation"}\n{"another":"otra"}'></textarea>`+
+        `<div class='actions'>`+
+          `<button data-import-apply='${code}'>Apply to Editor</button>`+
+          `<button class='secondary' data-import-close='${code}'>Close Import</button>`+
+        `</div>`+
+      `</div>`;
+    wrap.appendChild(card);
+  }
+  $('rebaseAll').disabled = known.length===0 || !EN_SOURCE_RAW; const res=$('ckResults'); res.innerHTML=''; res.appendChild(wrap); }
+$('ckRun').addEventListener('click',runChecker);
+
+// ---- Rebase helpers ----
+function sanitize(val){ return String(val).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function rewriteHeaderTo(code,name,src){ return rewriteHeaderToLang(src, code, name); }
+function fillFromExistingWithOverrides(blankSrc, langMap, overrides){ const lines=blankSrc.split(/\r?\n/), out=[]; let inDict=false, depth=0; const kv=/(^\s*)['\"]([^'\"]+)['\"]\s*:\s*(['\"])(?:[^\\]|\\.)*?\3(\s*,?\s*)(\/\/.*)?$/; for(let L of lines){ if(L.includes("I18N.addDict('")) inDict=true; if(inDict){ if(L.includes('{'))depth++; if(L.includes('}'))depth--; } const m=L.match(kv); if(m&&inDict&&depth>=1){ const ind=m[1], key=m[2], tail=m[4]||'', comment=m[5]||''; let raw = undefined; if(overrides && Object.prototype.hasOwnProperty.call(overrides,key) && typeof overrides[key]==='string' && overrides[key]!=='' ){ raw = overrides[key]; } else if (langMap && typeof langMap[key]==='string' && langMap[key]!=='' ){ raw = langMap[key]; } const v = (typeof raw==='string')?`'${sanitize(raw)}'`:`''`; L = `${ind}'${key}': ${v}${tail}${comment}`; } if(inDict&&depth<=0) inDict=false; out.push(L);} return out.join('\n'); }
+
+function rebaseOne(code, overrides){ if(!EN_SOURCE_RAW){ alert('Upload the English base first'); return; } const existing = I18N.getAll(code); if(!existing || !Object.keys(existing).length){ alert(`Language "${code}" is not loaded yet. Click "Scan & Check" first.`); return; } const name = (I18N.getName? I18N.getName(code) : code.toUpperCase()); let out = rewriteHeaderTo(code, name, EN_SOURCE_RAW); out = blankValuesButKeepComments(out); out = fillFromExistingWithOverrides(out, existing, overrides||{}); const enKeys=Object.keys(I18N.getAll('en')||{}); const exKeys=Object.keys(existing||{}); const removed=exKeys.filter(k=>!enKeys.includes(k)); if(removed.length){ out += `\n\n// --- Removed keys from previous ${code} ---\n` + removed.map(k=>`// ${k}`).join('\n'); } downloadBlob(`i18n.${code}.js`, out); }
+
+// ---- Build inline editor for Empty keys ----
+function buildEditorUI(code){ const en=I18N.getAll('en')||{}; const lang=I18N.getAll(code)||{}; const { empty } = compareMaps(en, lang); const host = document.getElementById(`editor-${code}`); if(!host) return; if(!empty.length){ host.style.display='none'; host.innerHTML=''; return; }
+  host.style.display='block'; const edits = editsByLang.get(code) || {}; const frag = document.createDocumentFragment(); const info = document.createElement('p'); info.className='muted'; info.textContent = `Editing ${empty.length} empty keys. Placeholders show English reference.`; frag.appendChild(info);
+  empty.forEach((key)=>{ const row = document.createElement('div'); row.className='edit-row'; const left = document.createElement('div'); const right = document.createElement('div'); const keyEl = document.createElement('code'); keyEl.textContent = key; left.appendChild(keyEl); const hint = document.createElement('div'); hint.className='hint'; hint.textContent = en[key]!==undefined ? String(en[key]) : ''; left.appendChild(hint); const input = document.createElement('textarea'); input.rows = 2; input.placeholder = en[key]!==undefined ? String(en[key]) : ''; input.value = (typeof edits[key]==='string') ? edits[key] : ''; input.dataset.key = key; right.appendChild(input); row.appendChild(left); row.appendChild(right); frag.appendChild(row); });
+  const actions = document.createElement('div'); actions.className='actions';
+  const saveBtn = document.createElement('button'); saveBtn.className='secondary'; saveBtn.textContent='Save Edits (session)'; saveBtn.addEventListener('click',()=>{ const inputs = host.querySelectorAll('textarea[data-key]'); const current = editsByLang.get(code) || {}; inputs.forEach(t=>{ const k=t.dataset.key; const v=t.value; if (v && v.trim()!=='') current[k]=v; else delete current[k]; }); editsByLang.set(code, current); alert('Edits saved for this session.'); });
+  const dlBtn = document.createElement('button'); dlBtn.textContent='Save & Download'; dlBtn.addEventListener('click',()=>{ const inputs = host.querySelectorAll('textarea[data-key]'); const overrides = {}; inputs.forEach(t=>{ const k=t.dataset.key; const v=t.value; if (v && v.trim()!=='') overrides[k]=v; }); const prior = editsByLang.get(code) || {}; Object.assign(prior, overrides); rebaseOne(code, prior); });
+  actions.appendChild(saveBtn); actions.appendChild(dlBtn);
+  host.innerHTML=''; host.appendChild(frag); host.appendChild(actions);
+}
+
+// ---- Export Empty → JSON ----
+function exportEmptyJSON(code){ const en=I18N.getAll('en')||{}; const lang=I18N.getAll(code)||{}; const { empty } = compareMaps(en, lang); const obj={}; empty.forEach(k=>{ obj[k] = ""; }); const name=`${code}-empty.json`; const text=JSON.stringify(obj, null, 2); const blob=new Blob([text],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
+
+// ---- Import Translations (JSON) ----
+function openImporter(code){ const box=document.getElementById(`importer-${code}`); if(box){ box.style.display='block'; } }
+function closeImporter(code){ const box=document.getElementById(`importer-${code}`); if(box){ box.style.display='none'; } }
+function applyImport(code){ const ta=document.querySelector(`textarea[data-import-text='${code}']`); if(!ta) return; let txt = ta.value.trim(); if(!txt){ alert('Paste JSON first.'); return; }
+  // Support either a single JSON object or newline-delimited JSON objects
+  let map={};
+  try{
+    if(txt.startsWith('{')){ map = JSON.parse(txt); }
+    else{ // NDJSON
+      txt.split(/\n+/).forEach(line=>{ if(!line.trim()) return; const obj=JSON.parse(line); Object.assign(map,obj); });
+    }
+  }catch(e){ alert('Invalid JSON.'); return; }
+  // Store into edits (only keys that exist in EN will later be applied by rebase)
+  const current = editsByLang.get(code) || {};
+  for(const k of Object.keys(map)){ const v = map[k]; if(typeof v==='string'){ current[k]=v; } }
+  editsByLang.set(code, current);
+  alert('Imported translations applied to editor session. You can now Save & Download or open Edit Empty to review.');
+}
+
+// ---- UI events: rebase, edit, export/import ----
+document.body.addEventListener('click', (e)=>{
+  const rb=e.target.closest('button[data-rebase]');
+  if(rb){ const code=rb.getAttribute('data-rebase'); rebaseOne(code, editsByLang.get(code)||{}); return; }
+  const ed=e.target.closest('button[data-edit]');
+  if(ed){ const code=ed.getAttribute('data-edit'); buildEditorUI(code); return; }
+  const ex=e.target.closest('button[data-export]');
+  if(ex){ const code=ex.getAttribute('data-export'); exportEmptyJSON(code); return; }
+  const oi=e.target.closest('button[data-open-import]');
+  if(oi){ const code=oi.getAttribute('data-open-import'); openImporter(code); return; }
+  const ic=e.target.closest('button[data-import-close]');
+  if(ic){ const code=ic.getAttribute('data-import-close'); closeImporter(code); return; }
+  const ia=e.target.closest('button[data-import-apply]');
+  if(ia){ const code=ia.getAttribute('data-import-apply'); applyImport(code); return; }
+});
+
+// ---- Bulk rebase ----
+$('rebaseAll').addEventListener('click', ()=>{ const known=(I18N.known?I18N.known():[]).filter(c=>c!=='en'); if(!known.length){ alert('No languages loaded. Run Scan & Check first.'); return; } for(const code of known){ rebaseOne(code, editsByLang.get(code)||{}); } });
+</script>
+</body>
+</html>
