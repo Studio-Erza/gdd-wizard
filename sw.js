@@ -9,7 +9,7 @@ const OFFLINE_ASSETS = [
   "./js/content.global.js",
   "./i18n/i18n.global.js",
   "./i18n/i18n.en.js",        // include other packs if you have them
-  "./assets/icon.png",
+  "./assets/Icon.png",
   "./assets/Erza_Logo_Pink.png",   // remove if you don’t use
   "./assets/Erza_Logo_Black.png",  // remove if you don’t use
   "./fonts/InterVariable.woff2",
