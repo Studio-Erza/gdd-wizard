@@ -65,6 +65,13 @@
   <script src="./js/content.global.js"></script>
   <script src="./js/engine.global.js"></script>
   <script src="./i18n/i18n.global.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
+  });
+}
+</script>
 
   <!-- NOTE: i18n.global.js will be added later after engine.global.js to preserve script order without causing 404s now. -->
 </body>
