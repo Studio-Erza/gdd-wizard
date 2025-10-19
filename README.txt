@@ -1,9 +1,9 @@
-To use GDD Wizard, simply run the GDD_Wizard.html file. it works offline in chromium browsers. Tested using Google Chrome.
+Hi everyone, Shay from Studio Erza here.
 
-Para usar GDD Wizard, simplemente ejecuta el archivo GDD_Wizard.html. Funciona sin conexión en navegadores basados en Chromium. Probado con Google Chrome.
+I've decided to move GDD Wizard over to a GitHub-hosted https server, the reason being that a hosted server will allow me add features like custom templates, as well as save and template managers - which to my knowledge would've been impossible otherwise.
 
-Pour utiliser GDD Wizard, exécutez simplement le fichier GDD_Wizard.html. Il fonctionne hors ligne dans les navigateurs Chromium. Testé avec Google Chrome.
+I would also like to announce that GDD Wizard will continue to receive updates including new features as well as bug fixes, but will remain completely free for everyone, with no separate builds locked behind paywalls. Donations are welcome, but not necessary. The previously planned "GDD Wizard Pro" will not be created, and all the features i had planned for it will simply be added to current free version.
 
-Para usar o GDD Wizard, basta executar o arquivo GDD_Wizard.html. Ele funciona offline em navegadores Chrome. Testado no Google Chrome.
+We don't currently have any updates, but if you'd like to try the new GitHub PWA, the download now leads to that server. It can be installed as an offline app from your browser when you first visit the site.
 
-Um den GDD Wizard zu verwenden, führen Sie einfach die Datei GDD_Wizard.html aus. Er funktioniert offline in Chromium-Browsern. Getestet mit Google Chrome.
+Thank you for your time and your support. Stay tuned for more additions to GDD Wizard!
