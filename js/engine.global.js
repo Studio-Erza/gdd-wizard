@@ -591,7 +591,11 @@
     if (Wizard.data.metaImage) dataOnly.metaImage = Wizard.data.metaImage;
     const payload={ templateId:t.id||'basic', version:2, data:dataOnly };
 
-    const filename=`gdd-${t.id||'basic'}-${todayISO()}.json`;
+    // Build nicer filename: Project_Title_template.json
+    const rawTitle = (Wizard.data.project || 'Untitled').trim();
+    const safeTitle = rawTitle.replace(/[^a-z0-9\-_.]+/gi, '_');
+    const filename = `${safeTitle || 'Untitled'}_${t.id || 'basic'}.json`;
+
     const text=JSON.stringify(payload, null, 2);
 
     if (FS.supported()) {
