@@ -219,6 +219,13 @@
     'err.json.invalid': 'Invalid JSON.',
     'err.image.load': 'Image load failed',
     'err.file.read': 'File read failed',
-    'err.image.type': 'Unsupported image type'
+    'err.image.type': 'Unsupported image type',
+
+    // NEW: App messages / popups
+    'msg.savedToFolder': 'Saved to your chosen folder.',
+    'err.fs.exportFailed': 'Could not save to the chosen folder; a download will start instead.',
+    'err.fs.importFailed': 'Could not open from the chosen folder; pick a file manually.',
+    'msg.imported': 'Imported your JSON data.',
+    'msg.reset': 'Template data reset.'
   });
 })();
