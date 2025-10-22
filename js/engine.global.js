@@ -603,10 +603,11 @@
         let dir = await FS.getRememberedDir();
         if (!dir) dir = await FS.pickAndRememberDir();
         await FS.saveTextInDir(dir, filename, text);
-        i18nAlert('✅ Saved to your chosen folder.','✅ Saved to your chosen folder.');
+        i18nAlert('msg.savedToFolder','Saved to your chosen folder.');
         return;
       }catch(e){
         console.warn('FS export failed, falling back:', e);
+        i18nAlert('err.fs.exportFailed','Could not save to the chosen folder; a download will start instead.');
         // fall through to classic download
       }
     }
@@ -634,6 +635,7 @@
       Wizard.steps=stepsForActiveTemplate();
       Wizard.step=0;
       render();
+      i18nAlert('msg.imported','Imported your JSON data.');
     }catch(e){ i18nAlert('err.json.invalid','Invalid JSON.'); }
   }
   function downscaleImage(file,maxW,maxH){ return new Promise((resolve,reject)=>{ const img=new Image(); const fr=new FileReader(); fr.onload=()=>{ img.onload=()=>{ try{ const ratio=Math.min(maxW/img.width, maxH/img.height, 1); const w=Math.round(img.width*ratio); const h=Math.round(img.height*ratio); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.imageSmoothingQuality='high'; ctx.drawImage(img,0,0,w,h); resolve(c.toDataURL('image/png', 0.95)); }catch(err){ reject(err); } }; img.onerror=()=>reject(new Error('err.image.load')); img.src=fr.result; }; fr.onerror=()=>reject(new Error('err.file.read')); fr.readAsDataURL(file); }); }
@@ -654,6 +656,7 @@
           }
         }catch(e){
           console.warn('FS import failed, falling back:', e);
+          i18nAlert('err.fs.importFailed','Could not open from the chosen folder; pick a file manually.');
         }
       }
       importJSONInput.click();
@@ -661,7 +664,7 @@
 
     importJSONInput.onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const fr=new FileReader(); fr.onload=()=>{ try{ const obj=JSON.parse(String(fr.result||'{}')); importJSON(obj); }catch(err){ i18nAlert('err.json.invalid','Invalid JSON.'); } }; fr.readAsText(f); };
 
-    btnReset.onclick=()=>{ if(i18nConfirm('confirm.reset','Reset current template data?')){ Wizard.data=makeDefaultData(Wizard.data.templateId||'basic'); if(!Wizard.data.exportTheme) Wizard.data.exportTheme='light'; persist(); render(); } };
+    btnReset.onclick=()=>{ if(i18nConfirm('confirm.reset','Reset current template data?')){ Wizard.data=makeDefaultData(Wizard.data.templateId||'basic'); if(!Wizard.data.exportTheme) Wizard.data.exportTheme='light'; persist(); render(); i18nAlert('msg.reset','Template data reset.'); } };
     btnPrintHeader.onclick=doPrint;
     document.addEventListener('i18n:changed', () => { render(); });
   }
