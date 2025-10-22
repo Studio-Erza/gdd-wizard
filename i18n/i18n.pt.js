@@ -219,6 +219,13 @@
     'err.json.invalid': 'JSON inválido.',
     'err.image.load': 'Falha ao carregar a imagem',
     'err.file.read': 'Falha na leitura do arquivo',
-    'err.image.type': 'Tipo de imagem não compatível'
+    'err.image.type': 'Tipo de imagem não compatível',
+
+    // NEW: App messages / popups
+    'msg.savedToFolder': 'Salvo na pasta do GDD Wizard',
+    'err.fs.exportFailed': 'Não foi possível salvar o arquivo.',
+    'err.fs.importFailed': 'Não foi possível abrir o arquivo.',
+    'msg.imported': 'Projeto importado com sucesso.',
+    'msg.reset': 'O projeto foi redefinido.'
   });
 })();

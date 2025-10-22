@@ -219,6 +219,13 @@
     'err.json.invalid': 'Ungültige JSON-Datei.',
     'err.image.load': 'Bild konnte nicht geladen werden.',
     'err.file.read': 'Datei konnte nicht gelesen werden.',
-    'err.image.type': 'Ungültiger Bildtyp.'
+    'err.image.type': 'Ungültiger Bildtyp.',
+
+    // NEW: App messages / popups
+    'msg.savedToFolder': 'Im GDD-Wizard-Ordner gespeichert',
+    'err.fs.exportFailed': 'Datei konnte nicht gespeichert werden.',
+    'err.fs.importFailed': 'Datei konnte nicht geöffnet werden.',
+    'msg.imported': 'Projekt erfolgreich importiert.',
+    'msg.reset': 'Das Projekt wurde zurückgesetzt.'
   });
 })();

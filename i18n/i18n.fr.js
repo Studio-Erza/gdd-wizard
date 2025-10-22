@@ -219,6 +219,13 @@
     'err.json.invalid': 'JSON non valide.',
     'err.image.load': 'Échec du chargement de l’image',
     'err.file.read': 'Échec de lecture du fichier',
-    'err.image.type': 'Type d’image non pris en charge'
+    'err.image.type': 'Type d’image non pris en charge',
+
+    // NEW: App messages / popups
+    'msg.savedToFolder': 'Enregistré dans le dossier de GDD Wizard',
+    'err.fs.exportFailed': 'Impossible d’enregistrer le fichier.',
+    'err.fs.importFailed': 'Impossible d’ouvrir le fichier.',
+    'msg.imported': 'Projet importé avec succès.',
+    'msg.reset': 'Le projet a été réinitialisé.'
   });
 })();
