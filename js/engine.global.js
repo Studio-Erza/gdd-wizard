@@ -20,6 +20,84 @@
   function i18nConfirm(key, fallback){ return confirm(i18nText(key, fallback)); }
   function i18nAlert(key, fallback){ return alert(i18nText(key, fallback)); }
 
+  // --- File System Access helpers (Chromium-based browsers) ---
+  const FS = {
+    supported: () => !!(window.showSaveFilePicker || window.showDirectoryPicker || window.showOpenFilePicker),
+
+    // tiny IndexedDB wrapper to store a directory handle
+    async _db(){ 
+      return await new Promise((res, rej)=>{
+        const req = indexedDB.open('gddw-fs', 1);
+        req.onupgradeneeded = () => req.result.createObjectStore('handles');
+        req.onsuccess = () => res(req.result);
+        req.onerror = () => rej(req.error);
+      });
+    },
+    async _get(key){
+      const db = await FS._db();
+      return await new Promise((res, rej)=>{
+        const tx = db.transaction('handles','readonly');
+        const st = tx.objectStore('handles');
+        const rq = st.get(key);
+        rq.onsuccess = () => res(rq.result || null);
+        rq.onerror = () => rej(rq.error);
+      });
+    },
+    async _set(key, val){
+      const db = await FS._db();
+      return await new Promise((res, rej)=>{
+        const tx = db.transaction('handles','readwrite');
+        const st = tx.objectStore('handles');
+        const rq = st.put(val, key);
+        rq.onsuccess = () => res(true);
+        rq.onerror = () => rej(rq.error);
+      });
+    },
+
+    // Ask once and remember
+    async pickAndRememberDir(){
+      const dir = await window.showDirectoryPicker();
+      await FS._set('exportDir', dir);
+      return dir;
+    },
+
+    // Get previously remembered dir (or null)
+    async getRememberedDir(){
+      const dir = await FS._get('exportDir');
+      if (!dir) return null;
+
+      // Check permission; if not granted, request it
+      const perm = await dir.queryPermission({ mode: 'readwrite' });
+      if (perm === 'granted') return dir;
+      const req = await dir.requestPermission({ mode: 'readwrite' });
+      return (req === 'granted') ? dir : null;
+    },
+
+    // Save text to a file inside a chosen directory
+    async saveTextInDir(dirHandle, filename, text){
+      const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(text);
+      await writable.close();
+    },
+
+    // Open a file picker starting in a known directory
+    async openFromDir(dirHandle, pickerOpts){
+      if (window.showOpenFilePicker) {
+        const [fh] = await window.showOpenFilePicker({
+          startIn: dirHandle || 'downloads',
+          multiple: false,
+          types: pickerOpts?.types || [
+            { description: 'JSON', accept: { 'application/json': ['.json'] } }
+          ]
+        });
+        const file = await fh.getFile();
+        return await file.text();
+      }
+      return null; // signal fallback path
+    }
+  };
+
   // Storage
   const STORAGE_PREFIX = 'gddw';
   const LEGACY_STORAGE_KEY = 'gddw';
@@ -502,7 +580,9 @@
   function switchTemplate(id){ Wizard.data=loadTemplateData(id); if(!Wizard.data.exportTheme) Wizard.data.exportTheme='light'; Wizard.steps=stepsForActiveTemplate(); Wizard.step=0; buildStepsNavProgress(); render(); persist(); }
 
   function download(filename,text){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'application/json'})); a.download=filename; a.click(); URL.revokeObjectURL(a.href); }
-  function exportJSON(){
+
+  // FS-aware export: save to remembered folder when available, else fall back
+  async function exportJSON(){
     const t=getActiveTemplate();
     const ordered=computeKeysInWizardOrder(t);
     const prefs = preferenceKeysForTemplate(t);
@@ -510,8 +590,31 @@
     [...ordered, ...prefs].forEach(k=>{ if(k in Wizard.data) dataOnly[k]=Wizard.data[k]; });
     if (Wizard.data.metaImage) dataOnly.metaImage = Wizard.data.metaImage;
     const payload={ templateId:t.id||'basic', version:2, data:dataOnly };
-    download(`gdd-${t.id||'basic'}-${todayISO()}.json`, JSON.stringify(payload, null, 2));
+
+    // Build nicer filename: Project_Title_template.json
+    const rawTitle = (Wizard.data.project || 'Untitled').trim();
+    const safeTitle = rawTitle.replace(/[^a-z0-9\-_.]+/gi, '_');
+    const filename = `${safeTitle || 'Untitled'}_${t.id || 'basic'}.json`;
+
+    const text=JSON.stringify(payload, null, 2);
+
+    if (FS.supported()) {
+      try{
+        let dir = await FS.getRememberedDir();
+        if (!dir) dir = await FS.pickAndRememberDir();
+        await FS.saveTextInDir(dir, filename, text);
+        i18nAlert('✅ Saved to your chosen folder.','✅ Saved to your chosen folder.');
+        return;
+      }catch(e){
+        console.warn('FS export failed, falling back:', e);
+        // fall through to classic download
+      }
+    }
+
+    // Fallback: classic browser download
+    download(filename, text);
   }
+
   function importJSON(obj){
     try{
       const t=getActiveTemplate();
@@ -534,7 +637,32 @@
     }catch(e){ i18nAlert('err.json.invalid','Invalid JSON.'); }
   }
   function downscaleImage(file,maxW,maxH){ return new Promise((resolve,reject)=>{ const img=new Image(); const fr=new FileReader(); fr.onload=()=>{ img.onload=()=>{ try{ const ratio=Math.min(maxW/img.width, maxH/img.height, 1); const w=Math.round(img.width*ratio); const h=Math.round(img.height*ratio); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.imageSmoothingQuality='high'; ctx.drawImage(img,0,0,w,h); resolve(c.toDataURL('image/png', 0.95)); }catch(err){ reject(err); } }; img.onerror=()=>reject(new Error('err.image.load')); img.src=fr.result; }; fr.onerror=()=>reject(new Error('err.file.read')); fr.readAsDataURL(file); }); }
-  function attachEvents(){ prevBtn.onclick=()=>{ if(Wizard.step>0) go(Wizard.step-1); }; nextBtn.onclick=()=>{ if(Wizard.step<Wizard.steps.length-1) go(Wizard.step+1); else doPrint(); }; btnExportJSON.onclick=exportJSON; btnImportJSON.onclick=()=>importJSONInput.click(); importJSONInput.onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const fr=new FileReader(); fr.onload=()=>{ try{ const obj=JSON.parse(String(fr.result||'{}')); importJSON(obj); }catch(err){ i18nAlert('err.json.invalid','Invalid JSON.'); } }; fr.readAsText(f); }; btnReset.onclick=()=>{ if(i18nConfirm('confirm.reset','Reset current template data?')){ Wizard.data=makeDefaultData(Wizard.data.templateId||'basic'); if(!Wizard.data.exportTheme) Wizard.data.exportTheme='light'; persist(); render(); } }; btnPrintHeader.onclick=doPrint;
+  function attachEvents(){ prevBtn.onclick=()=>{ if(Wizard.step>0) go(Wizard.step-1); }; nextBtn.onclick=()=>{ if(Wizard.step<Wizard.steps.length-1) go(Wizard.step+1); else doPrint(); }; btnExportJSON.onclick=exportJSON; 
+
+    // Prefer FS API to open starting in the remembered folder; fallback to <input>
+    btnImportJSON.onclick = async () => {
+      if (FS.supported()) {
+        try{
+          const dir = await FS.getRememberedDir();
+          const text = await FS.openFromDir(dir, {
+            types: [{ description:'GDD Wizard JSON', accept: { 'application/json': ['.json'] } }]
+          });
+          if (text != null) {
+            try { importJSON(JSON.parse(text)); }
+            catch (err) { i18nAlert('err.json.invalid','Invalid JSON.'); }
+            return;
+          }
+        }catch(e){
+          console.warn('FS import failed, falling back:', e);
+        }
+      }
+      importJSONInput.click();
+    };
+
+    importJSONInput.onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const fr=new FileReader(); fr.onload=()=>{ try{ const obj=JSON.parse(String(fr.result||'{}')); importJSON(obj); }catch(err){ i18nAlert('err.json.invalid','Invalid JSON.'); } }; fr.readAsText(f); };
+
+    btnReset.onclick=()=>{ if(i18nConfirm('confirm.reset','Reset current template data?')){ Wizard.data=makeDefaultData(Wizard.data.templateId||'basic'); if(!Wizard.data.exportTheme) Wizard.data.exportTheme='light'; persist(); render(); } };
+    btnPrintHeader.onclick=doPrint;
     document.addEventListener('i18n:changed', () => { render(); });
   }
   function init(){ migrateLegacyIfNeeded(); Wizard.steps=stepsForActiveTemplate(); Wizard.data=loadTemplateData(Wizard.data.templateId); if(!Wizard.data.exportTheme) Wizard.data.exportTheme='light'; attachEvents(); render(); }
