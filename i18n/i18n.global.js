@@ -137,7 +137,7 @@
     }catch(e){}
 
     // packs to load by default — add 'fr', etc. here later
-    const PACKS = ['en','es','fr','pt','de'];
+    const PACKS = ['en','es','fr','pt','de','cs'];
 
     I18N.loadPacks(PACKS).then(()=>{
       I18N.apply(document);
@@ -148,3 +148,4 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
+
