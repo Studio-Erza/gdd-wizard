@@ -73,29 +73,30 @@
   }
   </script>
 
-  <!-- Auto-insert version beside title -->
-  <script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    try {
-      // Fetch sw.js to extract version number
-      const res = await fetch("./sw.js", { cache: "no-store" });
-      const text = await res.text();
-      const match = text.match(/gddw-v\d+\.\d+\.\d+/);
-      if (!match) return;
-      const version = match[0].replace("gddw-", "");
+<!-- Auto-insert version beside title (more reliable) -->
+<script>
+window.addEventListener("load", async () => {
+  try {
+    // Cache-busting + wait for service worker to activate
+    const res = await fetch("./sw.js?bust=" + Date.now(), { cache: "no-store" });
+    const text = await res.text();
+    const match = text.match(/gddw-v\d+\.\d+\.\d+/);
+    if (!match) return;
 
-      const titleEl = document.getElementById("app-title");
-      if (titleEl && !titleEl.querySelector("#app-version")) {
-        const span = document.createElement("span");
-        span.id = "app-version";
-        span.textContent = ` ${version}`;
-        titleEl.appendChild(span);
-      }
-    } catch (err) {
-      console.warn("Could not fetch version from sw.js", err);
+    const version = match[0].replace("gddw-", "");
+    const titleEl = document.getElementById("app-title");
+
+    if (titleEl && !titleEl.querySelector("#app-version")) {
+      const span = document.createElement("span");
+      span.id = "app-version";
+      span.textContent = ` ${version}`;
+      titleEl.appendChild(span);
     }
-  });
-  </script>
+  } catch (err) {
+    console.warn("Could not fetch version from sw.js", err);
+  }
+});
+</script>
 
   <!-- NOTE: i18n.global.js will be added later after engine.global.js to preserve script order without causing 404s now. -->
 </body>
