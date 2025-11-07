@@ -69,6 +69,11 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:16p
 .title{font-size:clamp(22px,3.5vw,30px);font-weight:800}
 .desc{color:var(--muted);font-size:14px;max-width:65ch}
 
+/* === Minimal additions for version beside title === */
+#app-title{display:flex;align-items:baseline;gap:0.4em}
+#app-version{font-size:0.5em;opacity:0.7;font-weight:400;user-select:none}
+/* === End minimal additions === */
+
 header.top .row{display:flex;gap:8px;flex-wrap:nowrap}
 header.top .row button{white-space:nowrap;flex:0 0 auto}
 

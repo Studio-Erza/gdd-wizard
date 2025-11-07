@@ -20,7 +20,7 @@
 
         <!-- Title block (right) -->
         <div class="brand-text">
-          <div class="title" data-i18n="header.title">header.title</div>
+          <div class="title" data-i18n="header.title" id="app-title">header.title</div>
           <div class="desc" data-i18n="header.tagline.short">header.tagline.short</div>
           <div class="desc" data-i18n="header.tagline.long">header.tagline.long</div>
         </div>
@@ -65,13 +65,37 @@
   <script src="./js/content.global.js"></script>
   <script src="./js/engine.global.js"></script>
   <script src="./i18n/i18n.global.js"></script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js");
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js");
+    });
+  }
+  </script>
+
+  <!-- Auto-insert version beside title -->
+  <script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      // Fetch sw.js to extract version number
+      const res = await fetch("./sw.js", { cache: "no-store" });
+      const text = await res.text();
+      const match = text.match(/gddw-v\d+\.\d+\.\d+/);
+      if (!match) return;
+      const version = match[0].replace("gddw-", "");
+
+      const titleEl = document.getElementById("app-title");
+      if (titleEl && !titleEl.querySelector("#app-version")) {
+        const span = document.createElement("span");
+        span.id = "app-version";
+        span.textContent = ` ${version}`;
+        titleEl.appendChild(span);
+      }
+    } catch (err) {
+      console.warn("Could not fetch version from sw.js", err);
+    }
   });
-}
-</script>
+  </script>
 
   <!-- NOTE: i18n.global.js will be added later after engine.global.js to preserve script order without causing 404s now. -->
 </body>
