@@ -77,24 +77,28 @@
 <!-- Auto-insert version beside title (more reliable) -->
 <script>
 window.addEventListener("load", async () => {
-  try {
-    // Cache-busting + wait for service worker to activate
-    const res = await fetch("./sw.js?bust=" + Date.now(), { cache: "no-store" });
-    const text = await res.text();
-    const match = text.match(/gddw-v\d+\.\d+\.\d+/);
-    if (!match) return;
+  const versionKey = "gddw-version";
 
-    const version = match[0].replace("gddw-", "");
-    const titleEl = document.getElementById("app-title");
-
-    if (titleEl && !titleEl.querySelector("#app-version")) {
-      const span = document.createElement("span");
-      span.id = "app-version";
-      span.textContent = ` ${version}`;
-      titleEl.appendChild(span);
+  async function getVersion() {
+    try {
+      const res = await fetch("./sw.js", { cache: "no-store" });
+      const text = await res.text();
+      const match = text.match(/gddw-v\\d+\\.\\d+\\.\\d+/);
+      if (match) {
+        const version = match[0];
+        localStorage.setItem(versionKey, version);
+        return version;
+      }
+    } catch {
+      return localStorage.getItem(versionKey);
     }
-  } catch (err) {
-    console.warn("Could not fetch version from sw.js", err);
+    return localStorage.getItem(versionKey);
+  }
+
+  const version = await getVersion();
+  if (version) {
+    const cleanVersion = version.replace("gddw-", "");
+    document.title = `GDD Wizard ${cleanVersion}`;
   }
 });
 </script>
