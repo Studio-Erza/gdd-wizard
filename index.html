@@ -103,5 +103,43 @@ window.addEventListener("load", async () => {
 });
 </script>
 
+<script>
+window.addEventListener("load", async () => {
+  const versionKey = "gddw-version";
+
+  async function getVersion() {
+    try {
+      const res = await fetch("./sw.js", { cache: "no-store" });
+      const text = await res.text();
+      const match = text.match(/gddw-v\d+\.\d+\.\d+/);
+      if (match) {
+        const version = match[0];
+        localStorage.setItem(versionKey, version);
+        return version;
+      }
+    } catch {
+      return localStorage.getItem(versionKey);
+    }
+    return localStorage.getItem(versionKey);
+  }
+
+  const version = await getVersion();
+  if (version) {
+    const cleanVersion = version.replace("gddw-", "");
+    const baseTitle = "GDD Wizard";
+    const fullTitle = `${baseTitle} ${cleanVersion}`;
+    document.title = fullTitle;
+
+    // Watch for any code that changes the title later
+    const observer = new MutationObserver(() => {
+      if (!document.title.includes(cleanVersion)) {
+        document.title = fullTitle;
+      }
+    });
+    observer.observe(document.querySelector("title"), { childList: true });
+  }
+});
+</script>
+
 </body>
 </html>
