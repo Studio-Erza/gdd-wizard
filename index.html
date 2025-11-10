@@ -83,7 +83,7 @@ window.addEventListener("load", async () => {
     try {
       const res = await fetch("./sw.js", { cache: "no-store" });
       const text = await res.text();
-      const match = text.match(/gddw-v\\d+\\.\\d+\\.\\d+/);
+      const match = text.match(/gddw-v\d+\.\d+\.\d+/); // ← fixed regex
       if (match) {
         const version = match[0];
         localStorage.setItem(versionKey, version);
