@@ -1,4 +1,4 @@
-const CACHE = "gddw-v1.8.1";
+const CACHE = "gddw-v1.8.2";
 
 // put EVERY asset your app needs offline here:
 const OFFLINE_ASSETS = [
@@ -35,14 +35,34 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  if (url.origin === location.origin) {
+  // Don't cache Counter.dev analytics requests
+  if (url.hostname.includes("counter.dev")) return;
+
+  // Network-first for HTML pages (so the app + analytics always stay fresh)
+  if (req.mode === "navigate" || url.pathname.endsWith(".html")) {
     event.respondWith(
-      caches.match(req).then((cached) => cached || fetch(req).then((resp) => {
-        // put fetched files in cache for next time
-        const copy = resp.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy));
-        return resp;
-      }).catch(() => caches.match("./index.html")))
+      fetch(req)
+        .then((resp) => {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+          return resp;
+        })
+        .catch(() => caches.match(req).then((cached) => cached || caches.match("./index.html")))
     );
+    return;
   }
+
+  // Cache-first for everything else (CSS, JS, fonts, images, etc.)
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      return (
+        cached ||
+        fetch(req).then((resp) => {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+          return resp;
+        })
+      );
+    })
+  );
 });
