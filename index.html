@@ -8,8 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>app.title</title>
   <link rel="stylesheet" href="./css/styles.css" />
-  <!-- counter.dev analytics tracker -->
-  <script src="https://cdn.counter.dev/script.js" data-id="b4202385-bd19-42aa-9c57-c8a91816e1d6" data-utcoffset="-8"></script>
 </head>
 <body>
   <div class="app">
@@ -102,32 +100,33 @@ window.addEventListener("load", async () => {
 
   <!-- Counter.dev Daily Unique + Reload Pageviews + Referrer Tagging -->
   <script>
-  (function(){
-    const id = "b4202385-bd19-42aa-9c57-c8a91816e1d6";
-    const key = "counterdev-lastvisit";
-    const today = new Date().toDateString();
-    const last = localStorage.getItem(key);
+(function(){
+  const id = "b4202385-bd19-42aa-9c57-c8a91816e1d6";
+  const key = "counterdev-lastvisit";
+  const today = new Date().toDateString();
+  const last = localStorage.getItem(key);
 
-    // Detect referrer source
-    const refHost = document.referrer ? new URL(document.referrer).hostname : "";
-    const isPWA = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
-                  || window.navigator.standalone === true;
+  // Detect context
+  const refHost = document.referrer ? new URL(document.referrer).hostname : "";
+  const isPWA = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+                || window.navigator.standalone === true;
 
-    let refLabel = "direct";
-    if (isPWA) refLabel = "pwa";
-    else if (/github\\.com$/.test(refHost)) refLabel = "github";
-    else if (refHost) refLabel = refHost;
+  let pageLabel = "/reload";
+  if (isPWA) pageLabel = "/pwa-launch";
+  else if (/github\\.com$/.test(refHost)) pageLabel = "/from-github";
+  else if (refHost) pageLabel = `/from-${refHost}`;
+  else pageLabel = "/direct";
 
-    // Track a unique visit once per day per device
-    if (last !== today) {
-      fetch(`https://counter.dev/track?id=${id}&p=/daily-visit&r=${refLabel}`);
-      localStorage.setItem(key, today);
-    }
+  // One visit per day
+  if (last !== today) {
+    fetch(`https://counter.dev/track?id=${id}&p=/daily-visit${pageLabel}`);
+    localStorage.setItem(key, today);
+  }
 
-    // Track a pageview on every load or reload
-    fetch(`https://counter.dev/track?id=${id}&p=/reload&r=${refLabel}`);
-  })();
-  </script>
+  // Pageview on every reload
+  fetch(`https://counter.dev/track?id=${id}&p=${pageLabel}`);
+})();
+</script>
 
 </body>
 </html>
