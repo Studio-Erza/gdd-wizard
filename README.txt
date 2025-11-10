@@ -2,7 +2,7 @@ GDD Wizard:
 
 A lightweight tool for creating professional Game Design Documents (GDDs)
 
-Run it instantly - studio-erza.github.io/gdd-wizard
+Run it instantly - https://studio-erza.github.io/gdd-wizard/
 
 GDD Wizard runs right in your browser — no installs, accounts, or downloads required
 It’s fully open-source, privacy-friendly, and works both online and offline
@@ -13,7 +13,7 @@ Installation (Optional):
 You can install it as a Progressive Web App (PWA) for quick offline access
 
 In Google Chrome
-Open studio-erza.github.io/gdd-wizard
+Open https://studio-erza.github.io/gdd-wizard/
 
 Click the install icon (a monitor with a down-arrow) on the right side of the address bar
 
@@ -41,3 +41,4 @@ Works on desktop in browser or in a one-click installable PWA
 Updates automatically when a new version is released
 
 Source code available on GitHub
+
