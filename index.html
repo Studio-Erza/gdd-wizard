@@ -100,6 +100,34 @@ window.addEventListener("load", async () => {
 });
 </script>
 
-  <!-- NOTE: i18n.global.js will be added later after engine.global.js to preserve script order without causing 404s now. -->
+  <!-- Counter.dev Daily Unique + Reload Pageviews + Referrer Tagging -->
+  <script>
+  (function(){
+    const id = "b4202385-bd19-42aa-9c57-c8a91816e1d6";
+    const key = "counterdev-lastvisit";
+    const today = new Date().toDateString();
+    const last = localStorage.getItem(key);
+
+    // Detect referrer source
+    const refHost = document.referrer ? new URL(document.referrer).hostname : "";
+    const isPWA = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+                  || window.navigator.standalone === true;
+
+    let refLabel = "direct";
+    if (isPWA) refLabel = "pwa";
+    else if (/github\\.com$/.test(refHost)) refLabel = "github";
+    else if (refHost) refLabel = refHost;
+
+    // Track a unique visit once per day per device
+    if (last !== today) {
+      fetch(`https://counter.dev/track?id=${id}&p=/daily-visit&r=${refLabel}`);
+      localStorage.setItem(key, today);
+    }
+
+    // Track a pageview on every load or reload
+    fetch(`https://counter.dev/track?id=${id}&p=/reload&r=${refLabel}`);
+  })();
+  </script>
+
 </body>
 </html>
