@@ -199,9 +199,9 @@
     'ph.jam.controlsInputs': 'Controles. p. ej., WASD para moverse, Espacio para saltar',
     'ph.jam.uxNotes': 'Notas de UX. p. ej., menú de pausa, audio, brillo',
     'ph.jam.engineVersion': 'Motor y versión. p. ej., Unreal 5.4',
-    'ph.jam.pluginsTools': 'Plugins/herramientas. p. ej., Paper2D; GDD Wizard',
-    // fixed closing quote from your original file:
-    'ph.jam.assetSources': 'Origen de arte/audio. p. ej., Freesound; arte hecho en la jam',
+    'ph.jam.pluginsTools.item': 'Nombre del plugin o herramienta',
+	'ph.jam.assetSources.item': 'Fuente de arte o audio',
+
 
     // Placeholders — Dynamic editors
     'ph.loop.label': 'Etiqueta corta. p. ej., Paso 1: \'Explorar\'; Paso 2: \'Resolver\'',
@@ -229,3 +229,8 @@
     'msg.reset': 'El proyecto se ha restablecido.'
   });
 })();
+
+
+// --- Removed keys from previous es ---
+// ph.jam.pluginsTools
+// ph.jam.assetSources

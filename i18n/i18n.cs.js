@@ -199,9 +199,9 @@
     'ph.jam.controlsInputs': 'Ovládání. např. \'WASD pro pohyb, Mezerník pro skok\'',
     'ph.jam.uxNotes': 'UX poznámky. např. \'Menu pauzy, hlasitost, jas\'',
     'ph.jam.engineVersion': 'Engine a verze, např. \'Unreal Engine 5.4\'',
-    'ph.jam.pluginsTools': 'Pluginy a nástroje, např. \'Paper2D pro sprity, GDD Wizard pro dokumentaci\'',
-    // fixed closing quote from your original file:
-    'ph.jam.assetSources': 'Zdroje assetů / audia, např. \'Freesound, vlastní tvorba během jamu\'',
+    'ph.jam.pluginsTools.item': 'Název pluginu nebo nástroje',
+	'ph.jam.assetSources.item': 'Zdroj grafiky nebo audia',
+
 
     // Placeholders — Dynamic editors
     'ph.loop.label': 'Krátký název kroku, např. \'Prozkoumat\', \'Vyřešit\'',
@@ -229,3 +229,8 @@
     'msg.reset': 'Projekt byl resetován.'
   });
 })();
+
+
+// --- Removed keys from previous cs ---
+// ph.jam.pluginsTools
+// ph.jam.assetSources

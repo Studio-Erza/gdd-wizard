@@ -199,9 +199,9 @@
     'ph.jam.controlsInputs': "Controls. e.g., 'WASD to move, Space to jump'",
     'ph.jam.uxNotes': "User Experience. e.g., 'Pause Menu, Audio Sliders, Brightness Control'",
     'ph.jam.engineVersion': "Engine and version. e.g. 'Unreal Engine 5.4'",
-    'ph.jam.pluginsTools': "Plugins and Tools. e.g., 'Paper2D for sprites, GDD Wizard for documentation'",
-    // fixed closing quote from your original file:
-    'ph.jam.assetSources': "Where your art/audio comes from. e.g., 'Freesound for Audio, Art made during Jam'",
+    'ph.jam.pluginsTools.item': 'Plugin or tool name',
+	'ph.jam.assetSources.item': 'Art or audio source',
+
 
     // Placeholders — Dynamic editors
     'ph.loop.label': "Short label. e.g., Step one: 'Scout' Step two: 'Solve'",

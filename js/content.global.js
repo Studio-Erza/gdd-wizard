@@ -143,11 +143,19 @@
     });
     return `<p class="team-line">${escapeHtml(parts.join(' | '))}</p>`;
   }
+  
   function renderAssets(d){
-    return P3Key('export.engineVersion', d.engineVersion)
-         + P3Key('export.pluginsTools', d.pluginsTools)
-         + P3Key('export.assetSources', d.assetSources);
+    let out = P3Key('export.engineVersion', d.engineVersion);
+    const toList = (arr) => {
+      const list = Array.isArray(arr) ? arr.map(x => String(x||'').trim()).filter(Boolean) : [];
+      if (!list.length) return '<p>—</p>';
+      return '<ul>' + list.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>';
+    };
+    out += '<h3>export.pluginsTools</h3>' + toList(d.pluginsTools);
+    out += '<h3>export.assetSources</h3>' + toList(d.assetSources);
+    return out;
   }
+
 
   // ---------- Date helpers ----------
   function getLang(){
@@ -361,8 +369,8 @@
 		  placeholders: DYNAMIC_TEAM_PLACEHOLDERS },
 		{ id:'assets', framework:'form_section', title:'section.assetsTools', exporter:'assets', fields:[
 		  t('engineVersion','field.engineVersion','ph.jam.engineVersion'),
-          t('pluginsTools','field.pluginsTools','ph.jam.pluginsTools'),
-          t('assetSources','field.assetSources','ph.jam.assetSources')
+          { type:'repeatableList', name:'pluginsTools', label:'field.pluginsTools', placeholders:{ item:'ph.jam.pluginsTools.item' } },
+          { type:'repeatableList', name:'assetSources', label:'field.assetSources', placeholders:{ item:'ph.jam.assetSources.item' } }
 		]},
         // Restored: Jam Review & Export step (UI only)
         { id:'review', framework:'review_export', title:'section.reviewExport', variant:'jam' }

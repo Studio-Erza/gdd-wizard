@@ -199,9 +199,9 @@
     'ph.jam.controlsInputs': 'Steuerung (z.B. WASD)',
     'ph.jam.uxNotes': 'UX-Notizen (z.B. Controller)',
     'ph.jam.engineVersion': 'Engine-Version (z.B. Unity 2022)',
-    'ph.jam.pluginsTools': 'Plugins/Tools (z.B. Reaper)',
-    // fixed closing quote from your original file:
-    'ph.jam.assetSources': 'Asset-Quellen (z.B. OpenGameArt)',
+    'ph.jam.pluginsTools.item': 'Name des Plugins oder Tools',
+	'ph.jam.assetSources.item': 'Quelle für Art oder Audio',
+
 
     // Placeholders — Dynamic editors
     'ph.loop.label': 'Schrittname',
@@ -229,3 +229,8 @@
     'msg.reset': 'Das Projekt wurde zurückgesetzt.'
   });
 })();
+
+
+// --- Removed keys from previous de ---
+// ph.jam.pluginsTools
+// ph.jam.assetSources
